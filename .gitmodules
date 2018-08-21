@@ -1,0 +1,3 @@
+[submodule "elp_camera"]
+	path = elp_camera
+	url = git@github.com:KaiL4eK/elp_camera.git

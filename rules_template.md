@@ -1,7 +1,7 @@
 Привет, разработчик!  
 Здесь будут перечислены некоторые правила, которых стоит придерживаться для создания единого стиля разработки =)
 
-* Оформление функций в соответствии со стилем CamelCase, например `breakSensorIsPressed()` или через использование подчеркиваний "`_`".
+* Оформление функций в соответствии со стилем `CamelCase` [`breakSensorIsPressed()`] или через `snake_case` [`break_sensor_is_pressed()`].
 
 * Комментарии к функциям устанавливаются в соответствии с 
 [Doxygen стилем](https://www.rosettacommons.org/docs/latest/development_documentation/tutorials/doxygen-tips) / [Еще](https://www.stack.nl/~dimitri/doxygen/manual/commands.html)  

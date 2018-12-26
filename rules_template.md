@@ -102,7 +102,7 @@ git commit -am '[frontWheel]: New prototype for: int direction_get_value(dirVal_
 
 ```
 
-* При закрытии issue необходимо указывать коммент, в котором был сделаны последние изменения по теме issue.
+* При закрытии issue необходимо указывать коммент, в котором были сделаны последние изменения по теме issue.
 ```bash
 git commit -am '[directionDriver]: Fixed #34'
 

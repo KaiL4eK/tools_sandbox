@@ -2,7 +2,7 @@
 <launch>
   <!-- Аргумент, которым мы можем задать начальное положение робота в мире -->
   <!-- Параметры (-x, -y и т.д.) заданы как опции для узла spawn_model -->
-  <arg name="initial_pose" default="-x 0 -y 0 -z 0.3 -R 0 -P 0 -Y 0" />
+  <arg name="initial_pose" default="-x 0 -y 0 -z 0.5 -R 0 -P 0 -Y 0" />
 
   <!-- Аргумент, который содержит имя файла -->
   <arg name="urdf_file" default="$(find my_super_car_description)/urdf/model.urdf.xacro" />
@@ -35,7 +35,7 @@
   <arg name="rviz_gui" default="false" />
   <!-- Запускаем Gazebo, мир пустой - стандартный -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <!-- <arg name="world_name" value="$(find my_super_car_description)/worlds/skidpan.world"/> -->
+    <!-- <arg name="world_name" value="$(find my_super_car_description)/worlds/empty_bullet.world"/> -->
     <arg name="use_sim_time" value="true"/>
     <arg name="debug" value="false"/>
     <arg name="gui" value="$(arg gz_gui)" />

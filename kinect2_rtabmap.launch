@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="pi/2" value="1.5707963267948966" />
+<!-- 
+    <node pkg="tf" type="static_transform_publisher" name="camera_base_link"
+        args="0 0 0 -$(arg pi/2) 0 -$(arg pi/2) camera_link kinect2_base_link 100" /> 
+ -->
+	<include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch" >
+		<arg name="publish_tf" value="true" />
+	</include>
+
+	<include file="$(find rtabmap_ros)/launch/rgbd_mapping_kinect2.launch">
+		<arg name="resolution" value="qhd" />
+	</include>
+
+
+</launch>

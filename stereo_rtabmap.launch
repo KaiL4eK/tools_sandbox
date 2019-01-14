@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="pi/2" value="1.5707963267948966" />
+
+	<arg name="video_device" default="/dev/video0" />
+	
+	<include file="$(find elp_stereo_camera)/launch/camera_driver_elp.launch">
+		<arg name="video_device" value="$(arg video_device)" />
+		<arg name="camera_info" value="true" />
+	</include>
+
+	<node ns="stereo/cameras" pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" output="screen">
+        <!-- <param name="speckle_range" value="4" /> -->
+        <param name="speckle_size" value="250" />
+        <!-- <param name="min_disparity" value="-24" /> -->
+        <!-- <param name="disparity_range" value="96" /> -->
+        <param name="stereo_algorithm" value="0" />
+	</node>
+
+	<node name="disparity_view" pkg="image_view" type="stereo_view" output="screen">
+		<remap from="stereo" to="stereo/cameras" />
+		<remap from="image" to="image_rect" />
+	</node>
+
+	<include file="$(find rtabmap_ros)/launch/stereo_mapping.launch">
+		<arg name="stereo_namespace" value="/stereo/cameras" />
+	</include>
+
+
+
+</launch>

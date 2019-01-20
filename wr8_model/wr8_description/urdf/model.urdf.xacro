@@ -155,7 +155,7 @@
       <axis xyz="0 0 -1"/>
     </joint>
 
-    <transmission name="${name}_rotate_trans">
+<!--     <transmission name="${name}_rotate_trans">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="${name}_rotate_joint">
         <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
@@ -163,7 +163,7 @@
       <actuator name="${name}_rotate_motor">
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
-    </transmission>
+    </transmission> -->
   </xacro:macro>
 <!-- 
   <link name="base_footage">

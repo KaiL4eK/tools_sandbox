@@ -3,6 +3,7 @@
 
   <include file="$(find wr8_description)/launch/gazebo.launch">
     <arg name="rviz_gui" value="true" />
+    <!-- <arg name="gz_gui" value="true" /> -->
   </include>
 
   <include file="$(find wr8_navigation)/launch/gmapping.launch">

@@ -37,7 +37,7 @@
 
     <arg name="respawn_gazebo" value="true" />
     <!-- <arg name="world_name" value="$(find wr8_description)/worlds/empty_bullet.world"/> -->
-    <arg name="world_name" value="$(find wr8_description)/worlds/RFMaze/RFMaze.world"/>
+    <arg name="world_name" value="$(find wr8_description)/worlds/RFMaze.world"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="debug" value="false"/>
     <arg name="gui" value="$(arg gz_gui)"/>

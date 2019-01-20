@@ -5,6 +5,8 @@
   <arg name="odom_frame"   default="odom"/>
   <arg name="base_frame"   default="base_footprint"/>
   <arg name="global_frame" default="map"/>
+
+  <arg name="cmd_topic" default="cmd_vel" />
   <arg name="odom_topic" default="odom" />
   <arg name="laser_topic" default="scan" />
 
@@ -31,7 +33,7 @@
     <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
     <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
 
-    <remap from="cmd_vel" to="ackermann_drive_controller/cmd_vel"/>
+    <remap from="cmd_vel" to="$(arg cmd_topic)"/>
     <remap from="odom" to="$(arg odom_topic)"/>
     <remap from="scan" to="$(arg laser_topic)"/>
   </node>

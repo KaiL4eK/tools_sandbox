@@ -1,11 +1,18 @@
 <?xml version="1.0"?>
 <launch>
 
+  <include file="$(find wr8_description)/launch/gazebo.launch">
+    <arg name="rviz_gui" value="true" />
+  </include>
+
   <include file="$(find wr8_navigation)/launch/gmapping.launch">
     <arg name="base_frame" value="base_link" />
+    <arg name="scan_topic" value="scan" />
   </include>
 
   <include file="$(find wr8_navigation)/launch/move_base.launch">
     <arg name="base_frame" value="base_link" />
+    <arg name="odom_topic" value="ackermann_drive_controller/odom" />
+    <arg name="cmd_topic" value="ackermann_drive_controller/cmd_vel" />
   </include>
 </launch>

@@ -28,7 +28,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: LaserScan
 Visualization Manager:
   Class: ""
   Displays:
@@ -65,6 +65,8 @@ Visualization Manager:
           Value: false
         left_travel_wheel:
           Value: false
+        map:
+          Value: true
         odom:
           Value: true
         right_steer_wheel:
@@ -79,7 +81,21 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        map:
+          odom:
+            base_link:
+              hokuyo_link:
+                {}
+              left_steer_wheel_base:
+                left_steer_wheel:
+                  {}
+              left_travel_wheel:
+                {}
+              right_steer_wheel_base:
+                right_steer_wheel:
+                  {}
+              right_travel_wheel:
+                {}
       Update Interval: 0
       Value: true
     - Alpha: 0.5
@@ -281,6 +297,30 @@ Visualization Manager:
       Topic: /move_base/current_goal
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Arrow Length: 0.300000012
+      Axes Length: 0.300000012
+      Axes Radius: 0.00999999978
+      Class: rviz/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.0700000003
+      Head Radius: 0.0299999993
+      Name: PoseArray
+      Shaft Length: 0.230000004
+      Shaft Radius: 0.00999999978
+      Shape: Arrow (Flat)
+      Topic: /move_base/TebLocalPlannerROS/teb_poses
+      Unreliable: false
+      Value: true
+    - Alpha: 1
+      Class: rviz/Polygon
+      Color: 25; 255; 0
+      Enabled: true
+      Name: Polygon
+      Topic: /move_base/local_costmap/footprint
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -306,25 +346,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 13.8776903
+      Distance: 4.97739697
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.0262490883
-        Y: 0.0950487629
-        Z: 1.27349854
+        X: 0.710514903
+        Y: -0.664877415
+        Z: 1.64588606
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.26979649
+      Pitch: 1.12979662
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.92040014
+      Yaw: 3.07040119
     Saved: ~
 Window Geometry:
   "&Displays":

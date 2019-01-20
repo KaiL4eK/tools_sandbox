@@ -8,7 +8,7 @@
       <uri>model://sun</uri>
     </include>
     <include>
-      <uri>/home/alexey/RFMaze</uri>
+      <uri>model://RFMaze</uri>
     </include>
   </world>
 </sdf>

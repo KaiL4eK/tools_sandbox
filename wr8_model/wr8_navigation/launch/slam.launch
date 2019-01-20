@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+
+  <include file="$(find wr8_navigation)/launch/gmapping.launch">
+    <arg name="base_frame" value="base_link" />
+  </include>
+
+  <include file="$(find wr8_navigation)/launch/move_base.launch">
+    <arg name="base_frame" value="base_link" />
+  </include>
+</launch>

@@ -2,7 +2,11 @@
 <launch>
   <!-- Аргумент, которым мы можем задать начальное положение робота в мире -->
   <!-- Параметры (-x, -y и т.д.) заданы как опции для узла spawn_model -->
-  <arg name="initial_pose" default="-x 0 -y 0 -z 0.5 -R 0 -P 0 -Y 0" />
+  <arg name="x" default="0" />
+  <arg name="y" default="0" />
+  <arg name="native_odom" default="false" />
+
+  <arg name="initial_pose" default="-x $(arg x) -y $(arg y) -z 0.5 -R 0 -P 0 -Y 0" />
 
   <arg name="tmode" default="false" />
 
@@ -25,6 +29,8 @@
     args="ackermann_joint_state_controller
           ackermann_drive_controller"/>
 
+  <param name="ackermann_drive_controller/enable_odom_tf" value="$(arg native_odom)" />
+
   <arg name="gz_gui" default="false" />
   <arg name="rviz_gui" default="false" />
   <!-- Запускаем Gazebo, мир пустой - стандартный -->
@@ -40,13 +46,17 @@
   </include>
 
   <!-- Просто запустим rviz, после настройки добавим запуск конфигурации -->
-  <group if="$(arg rviz_gui)">
-    <node if="$(arg tmode)" name="rviz" pkg="rviz" type="rviz" args="-d $(find wr8_description)/rviz/model_view.rviz" />
-    <node unless="$(arg tmode)" name="rviz" pkg="rviz" type="rviz" args="-d $(find wr8_description)/rviz/nav.rviz" />
-  </group>
+  <node if="$(arg rviz_gui)" name="rviz" pkg="rviz" type="rviz" args="-d $(find wr8_description)/rviz/model_view.rviz" />
   
   <node if="$(arg tmode)" name="rqt_robot_steering" pkg="rqt_robot_steering" type="rqt_robot_steering">
     <param name="default_topic" value="/ackermann_drive_controller/cmd_vel"/>
+  </node>
+
+  <node unless="$(arg native_odom)" 
+        pkg="laser_scan_matcher" type="laser_scan_matcher_node" name="laser_scan_matcher_node" output="screen">
+    <param name="base_frame" value="base_footprint" />
+    <param name="fixed_frame" value="odom" />
+    <param name="max_iterations" value="10" />
   </node>
 
   <!-- Опубликуем TF динамические преобразования на основе описания `robot_description` -->

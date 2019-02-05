@@ -55,11 +55,11 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        base_footprint:
+          Value: true
         base_link:
           Value: false
         hokuyo_link:
-          Value: false
-        left_steer_wheel:
           Value: false
         left_steer_wheel_base:
           Value: false
@@ -69,8 +69,6 @@ Visualization Manager:
           Value: true
         odom:
           Value: true
-        right_steer_wheel:
-          Value: false
         right_steer_wheel_base:
           Value: false
         right_travel_wheel:
@@ -83,74 +81,35 @@ Visualization Manager:
       Tree:
         map:
           odom:
-            base_link:
-              hokuyo_link:
-                {}
-              left_steer_wheel_base:
-                left_steer_wheel:
+            base_footprint:
+              base_link:
+                hokuyo_link:
                   {}
-              left_travel_wheel:
-                {}
-              right_steer_wheel_base:
-                right_steer_wheel:
+                left_steer_wheel_base:
                   {}
-              right_travel_wheel:
-                {}
+                left_travel_wheel:
+                  {}
+                right_steer_wheel_base:
+                  {}
+                right_travel_wheel:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 0.5
       Class: rviz/RobotModel
       Collision Enabled: false
-      Enabled: true
+      Enabled: false
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        hokuyo_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        left_steer_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        left_steer_wheel_base:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        left_travel_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_steer_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_steer_wheel_base:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        right_travel_wheel:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
       Update Interval: 0
-      Value: true
+      Value: false
       Visual Enabled: true
     - Angle Tolerance: 0.100000001
       Class: rviz/Odometry
@@ -321,6 +280,16 @@ Visualization Manager:
       Topic: /move_base/local_costmap/footprint
       Unreliable: false
       Value: true
+    - Alpha: 0.699999988
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /move_base/global_costmap/costmap
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -346,25 +315,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 11.5796871
+      Distance: 9.31552219
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 4.24664783
-        Y: -4.48896694
-        Z: 1.97095358
+        X: 1.71146953
+        Y: -4.01802254
+        Z: 1.80441737
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.54979634
+      Pitch: 0.989796877
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.13040638
+      Yaw: 3.01040816
     Saved: ~
 Window Geometry:
   "&Displays":

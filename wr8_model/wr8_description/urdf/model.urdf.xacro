@@ -165,11 +165,11 @@
       </actuator>
     </transmission> -->
   </xacro:macro>
-<!-- 
-  <link name="base_footage">
+
+  <link name="base_footprint">
   </link>
-  <gazebo reference="base_footage"/>
- -->
+  <gazebo reference="base_footprint"/>
+
   <link name="base_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -192,13 +192,14 @@
   <gazebo reference="base_link">
     <material>Gazebo/Grey</material>
   </gazebo>
-<!-- 
+
   <joint name="base_footage_2_link" type="fixed">
-    <parent link="base_footage"/>
+    <parent link="base_footprint"/>
     <child link="base_link"/>
+    <!-- <origin xyz="${wheelbase/2} 0 ${wheel_radius}" rpy="0 0 0"/> -->
     <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
   </joint>
- -->
+
 <!-- 
   <xacro:steering_wheel name="right_steer_wheel" base_name="base_link" xyz="${wheelbase/2} ${-chassis_width/2} 0" ref="-1" />
   <xacro:steering_wheel name="left_steer_wheel" base_name="base_link" xyz="${wheelbase/2} ${chassis_width/2} 0" ref="1" />
@@ -262,6 +263,8 @@
           <horizontal>
             <samples>360</samples>
             <resolution>1</resolution>
+            <!-- <min_angle>0</min_angle> -->
+            <!-- <max_angle>${2*pi}</max_angle> -->
             <min_angle>${-pi}</min_angle>
             <max_angle>${pi}</max_angle>
           </horizontal>

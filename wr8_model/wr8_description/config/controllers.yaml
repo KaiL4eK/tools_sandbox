@@ -49,7 +49,7 @@ ackermann_drive_controller:
   twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
 
   # Top level frame (link) of the robot description
-  base_frame_id: base_link
+  base_frame_id: base_footprint
 
   # Velocity and acceleration limits for the robot
   linear:
@@ -64,3 +64,5 @@ ackermann_drive_controller:
       max_velocity           : 2.0   # rad/s
       has_acceleration_limits: true
       max_acceleration       : 6.0   # rad/s^2
+  
+  enable_odom_tf: false

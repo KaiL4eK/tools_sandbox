@@ -4,6 +4,9 @@ import itertools as it
 from pygame.locals import *
 import time
 
+# local TF -> ROS: (x1, y1) = (2*y, -2*x)
+# ROS -> local TF: (x, y) = (-y1/2, x1/2)
+
 def main(args=None):
 
     pygame.init()

@@ -31,7 +31,6 @@ class Node:
 
     node_idx_cntr = 0
     
-
     dir_deltas = [Point(0, 1),
                   Point(1, 0),
                   Point(0, -1),

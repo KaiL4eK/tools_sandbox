@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 import itertools as it
 from pygame.locals import *
+import time
 
 def main(args=None):
 
@@ -18,6 +19,7 @@ def main(args=None):
     maze = Maze(structure)
 
     maze.render_maze()
+    maze.nextPreprocessing()
 
     while True:
         for event in pygame.event.get():
@@ -76,6 +78,22 @@ def getLetterFromDirPnt(fromDirPnt):
 
     return None
 
+# With dir letter
+class PointDir:
+    def __init__(self, x=0, y=0, d=0):
+        self.x = x
+        self.y = y
+        self.d = d
+
+    def get_tuple(self):
+        return (self.x, self.y, self.d)
+
+    def __str__(self):
+        return '[{}; {}; {}]'.format(self.x, self.y, self.d)
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.d == other.d
+
 class Node:
 
     node_idx_cntr = 0
@@ -105,6 +123,7 @@ class Node:
         self.next_nodes     = [None, None, None, None]
 
         self.dirNeighbours = [None, None, None]
+        self.dirLetr = None
 
         self.idx = -1
 
@@ -118,8 +137,28 @@ class Node:
 
         return None
 
+    def show_info(self):
+        print('id: {}/{}:'.format(self.idx, self.dirLetr))
+        
+        nghbr = self.dirNeighbours[0]
+        if nghbr:
+            print('  Neighbour R: {}/{}'.format(nghbr.idx, nghbr.dirLetr))
+        else:
+            print('  Neighbour R: None')
 
+        
+        nghbr = self.dirNeighbours[1]
+        if nghbr:
+            print('  Neighbour F: {}/{}'.format(nghbr.idx, nghbr.dirLetr))
+        else:
+            print('  Neighbour F: None')
 
+        
+        nghbr = self.dirNeighbours[2]
+        if nghbr:
+            print('  Neighbour L: {}/{}'.format(nghbr.idx, nghbr.dirLetr))
+        else:
+            print('  Neighbour L: None')
 
 
 
@@ -188,34 +227,65 @@ class Maze:
     def getDirNeighbours(self, pnt, fromDirPnt):
 
         if pnt.get_tuple() in self.edges:
-            print('Edge found, skip it from {} to {}'.format(pnt, pnt + fromDirPnt))
+            # print('Edge found, skip it from {} to {}'.format(pnt, pnt + fromDirPnt))
             return self.getDirNeighbours(pnt + fromDirPnt, fromDirPnt)
 
         currNode = self.nodes[pnt.get_tuple()]
 
-        print('Node "{}/{}" found on {}'.format(currNode, getLetterFromDirPnt(fromDirPnt), pnt))
+        if currNode == self.start_node:
+            return None
+
+        fromDirLtr = getLetterFromDirPnt(fromDirPnt)
+        # print('Node "{}/{}" found on {}'.format(currNode, fromDirLtr, pnt))
         
+        newPntDir = PointDir(pnt.x, pnt.y, fromDirLtr)
+        
+        if newPntDir.get_tuple() in self.new_nodes_list:
+            # print('But already found on dictionary')
+            return self.new_nodes_list[newPntDir.get_tuple()]
+
+        newNode = Node(pnt)
+        newNode.idx = currNode.idx
+        newNode.dirLetr = fromDirLtr
+
+        # time.sleep(2)
+
+        self.new_nodes_list[newPntDir.get_tuple()] = newNode
+
         rightDir = self.getRightDirPnt(fromDirPnt)
-        self.currNode.dirNeighbours[0] = getDirNeighbours()
+        nextPnt = pnt + rightDir
+        if self.isPntValid(nextPnt):
+            newNode.dirNeighbours[0] = self.getDirNeighbours(nextPnt, rightDir)
+        else:
+            newNode.dirNeighbours[0] = None
 
         forwardDir = self.getForwardDirPnt(fromDirPnt)
-        self.currNode.dirNeighbours[1] = getDirNeighbours()
+        nextPnt = pnt + forwardDir
+        if self.isPntValid(nextPnt):
+            newNode.dirNeighbours[1] = self.getDirNeighbours(nextPnt, forwardDir)
+        else:
+            newNode.dirNeighbours[1] = None
 
         leftDir = self.getLeftDirPnt(fromDirPnt)
-        self.currNode.dirNeighbours[2] = getDirNeighbours()
+        nextPnt = pnt + leftDir
+        if self.isPntValid(nextPnt):
+            newNode.dirNeighbours[2] = self.getDirNeighbours(nextPnt, leftDir)
+        else:
+            newNode.dirNeighbours[2] = None
 
-        return None
+        return newNode
 
 
-    def getRightDirPnt(fromDirPnt):
-        toDirPnt = Point(fromDirPnt.y, fromDirPnt.x)
+
+    def getRightDirPnt(self, fromDirPnt):
+        toDirPnt = Point(fromDirPnt.y, -fromDirPnt.x)
         return toDirPnt
 
-    def getLeftDirPnt(fromDirPnt):
+    def getLeftDirPnt(self, fromDirPnt):
         toDirPnt = Point(-fromDirPnt.y, fromDirPnt.x)
         return toDirPnt
 
-    def getForwardDirPnt(fromDirPnt):
+    def getForwardDirPnt(self, fromDirPnt):
         toDirPnt = fromDirPnt
         return toDirPnt
 
@@ -295,8 +365,6 @@ class Maze:
         #         break
 
         # Get forward direction
-        self.start_node.dirNeighbours[1] = self.getDirNeighbours(self.start_node.coord + to_directions[0], to_directions[0])
-
 
 
         # for key in self.nodes:
@@ -351,12 +419,30 @@ class Maze:
         #     for node in self.nodes[key].next_nodes:
         #         print('\t{}'.format(node))
 
+    def nextPreprocessing(self):
+        self.start_node.dirNeighbours[1] = self.getDirNeighbours(self.start_node.coord + to_directions[0], to_directions[0])
+
+        for elem in self.new_nodes_list:
+            self.new_nodes_list[elem].show_info()
 
     def is_element_vacant(self, elem):
         if elem == 0 or elem == 1 or elem == 2:
             return True
 
         return False
+
+    def isPntValid(self, p):
+        if p.x < 0 or p.x >= self.width:
+            return False
+
+        if p.y < 0 or p.y >= self.height:
+            return False
+
+        elem = self.get_maze_element(p)
+        if not self.is_element_vacant(elem):
+            return False
+
+        return True
 
     # Return    
     #   8 - occupied

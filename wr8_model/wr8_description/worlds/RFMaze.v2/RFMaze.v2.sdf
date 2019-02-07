@@ -101,19 +101,18 @@
       </visual>
       <pose>14 10 0 0 0 1.57079632679</pose>
     </link>
-    
     <link name='BoxH_0'>
       <collision name='col'>
         <geometry>
           <box>
-            <size>2 1 2.5</size>
+            <size>4 2 2.5</size>
           </box>
         </geometry>
       </collision>
       <visual name='vis'>
         <geometry>
           <box>
-            <size>2 1 2.5</size>
+            <size>4 2 2.5</size>
           </box>
         </geometry>
         <material>
@@ -124,20 +123,20 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>0 -0.5 0 0 0 0</pose>
+      <pose>12 7 0 0 0 0</pose>
     </link>
-    <link name='BoxH_1'>
+    <link name='BoxV_1'>
       <collision name='col'>
         <geometry>
           <box>
-            <size>2 1 2.5</size>
+            <size>2 6 2.5</size>
           </box>
         </geometry>
       </collision>
       <visual name='vis'>
         <geometry>
           <box>
-            <size>2 1 2.5</size>
+            <size>2 6 2.5</size>
           </box>
         </geometry>
         <material>
@@ -148,20 +147,20 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>3 -0.5 0 0 0 0</pose>
+      <pose>3 3 0 0 0 0</pose>
     </link>
     <link name='BoxV_2'>
       <collision name='col'>
         <geometry>
           <box>
-            <size>1 2 2.5</size>
+            <size>2 4 2.5</size>
           </box>
         </geometry>
       </collision>
       <visual name='vis'>
         <geometry>
           <box>
-            <size>1 2 2.5</size>
+            <size>2 4 2.5</size>
           </box>
         </geometry>
         <material>
@@ -172,20 +171,20 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>0.5 2 0 0 0 0</pose>
+      <pose>7 4 0 0 0 0</pose>
     </link>
     <link name='BoxV_3'>
       <collision name='col'>
         <geometry>
           <box>
-            <size>1 2 2.5</size>
+            <size>2 4 2.5</size>
           </box>
         </geometry>
       </collision>
       <visual name='vis'>
         <geometry>
           <box>
-            <size>1 2 2.5</size>
+            <size>2 4 2.5</size>
           </box>
         </geometry>
         <material>
@@ -196,20 +195,20 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>-1.5 2 0 0 0 0</pose>
+      <pose>7 10 0 0 0 0</pose>
     </link>
     <link name='BoxV_4'>
       <collision name='col'>
         <geometry>
           <box>
-            <size>1 2 2.5</size>
+            <size>2 4 2.5</size>
           </box>
         </geometry>
       </collision>
       <visual name='vis'>
         <geometry>
           <box>
-            <size>1 2 2.5</size>
+            <size>2 4 2.5</size>
           </box>
         </geometry>
         <material>
@@ -220,20 +219,20 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>2.5 2 0 0 0 0</pose>
+      <pose>3 10 0 0 0 0</pose>
     </link>
-    <link name='BoxV_5'>
+    <link name='Box_4'>
       <collision name='col'>
         <geometry>
           <box>
-            <size>1 2 2.5</size>
+            <size>2 2 2.5</size>
           </box>
         </geometry>
       </collision>
       <visual name='vis'>
         <geometry>
           <box>
-            <size>1 2 2.5</size>
+            <size>2 2 2.5</size>
           </box>
         </geometry>
         <material>
@@ -244,55 +243,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>-2.5 -1 0 0 0 0</pose>
-    </link>
-    <link name='BoxV_6'>
-      <collision name='col'>
-        <geometry>
-          <box>
-            <size>1 2 2.5</size>
-          </box>
-        </geometry>
-      </collision>
-      <visual name='vis'>
-        <geometry>
-          <box>
-            <size>1 2 2.5</size>
-          </box>
-        </geometry>
-        <material>
-          <script>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/Grey</name>
-          </script>
-          <ambient>1 1 1 1</ambient>
-        </material>
-      </visual>
-      <pose>0.5 -3 0 0 0 0</pose>
-    </link>
-    <link name='BoxH_7'>
-      <collision name='col'>
-        <geometry>
-          <box>
-            <size>2 1 2.5</size>
-          </box>
-        </geometry>
-      </collision>
-      <visual name='vis'>
-        <geometry>
-          <box>
-            <size>2 1 2.5</size>
-          </box>
-        </geometry>
-        <material>
-          <script>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-            <name>Gazebo/Grey</name>
-          </script>
-          <ambient>1 1 1 1</ambient>
-        </material>
-      </visual>
-      <pose>-2 -2.5 0 0 0 0</pose>
+      <pose>11 11 0 0 0 0</pose>
     </link>
     <link name='Column_0'>
       <collision name='col'>
@@ -316,7 +267,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>2 -1.5 0 0 0 0</pose>
+      <pose>10 0 0 0 0 0</pose>
     </link>
     <link name='Column_1'>
       <collision name='col'>
@@ -340,7 +291,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>2 -2 0 0 0 0</pose>
+      <pose>10 1 0 0 0 0</pose>
     </link>
     <link name='Column_2'>
       <collision name='col'>
@@ -364,7 +315,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>2.5 -2 0 0 0 0</pose>
+      <pose>10 2 0 0 0 0</pose>
     </link>
     <link name='Column_3'>
       <collision name='col'>
@@ -388,7 +339,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>3 -2 0 0 0 0</pose>
+      <pose>11 2 0 0 0 0</pose>
     </link>
     <link name='Column_4'>
       <collision name='col'>
@@ -412,7 +363,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>3.5 -2 0 0 0 0</pose>
+      <pose>12 2 0 0 0 0</pose>
     </link>
     <link name='Column_5'>
       <collision name='col'>
@@ -436,7 +387,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>4 -2 0 0 0 0</pose>
+      <pose>13 2 0 0 0 0</pose>
     </link>
     <link name='Column_6'>
       <collision name='col'>
@@ -460,9 +411,8 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>4 -1.5 0 0 0 0</pose>
+      <pose>14 2 0 0 0 0</pose>
     </link>
-
     <link name='Column_7'>
       <collision name='col'>
         <geometry>
@@ -485,7 +435,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>2 -3.5 0 0 0 0</pose>
+      <pose>14 1 0 0 0 0</pose>
     </link>
     <link name='Column_8'>
       <collision name='col'>
@@ -509,8 +459,9 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>2 -3 0 0 0 0</pose>
+      <pose>14 0 0 0 0 0</pose>
     </link>
+
     <link name='Column_9'>
       <collision name='col'>
         <geometry>
@@ -533,7 +484,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>2.5 -3 0 0 0 0</pose>
+      <pose>10 6 0 0 0 0</pose>
     </link>
     <link name='Column_10'>
       <collision name='col'>
@@ -557,7 +508,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>3 -3 0 0 0 0</pose>
+      <pose>10 5 0 0 0 0</pose>
     </link>
     <link name='Column_11'>
       <collision name='col'>
@@ -581,7 +532,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>3.5 -3 0 0 0 0</pose>
+      <pose>10 4 0 0 0 0</pose>
     </link>
     <link name='Column_12'>
       <collision name='col'>
@@ -605,7 +556,7 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>4 -3 0 0 0 0</pose>
+      <pose>11 4 0 0 0 0</pose>
     </link>
     <link name='Column_13'>
       <collision name='col'>
@@ -629,9 +580,107 @@
           <ambient>1 1 1 1</ambient>
         </material>
       </visual>
-      <pose>4 -3.5 0 0 0 0</pose>
+      <pose>12 4 0 0 0 0</pose>
     </link>
+    <link name='Column_14'>
+      <collision name='col'>
+        <geometry>
+          <box>
+            <size>0.1 0.1 2.5</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='vis'>
+        <geometry>
+          <box>
+            <size>0.1 0.1 2.5</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Grey</name>
+          </script>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+      <pose>13 4 0 0 0 0</pose>
+    </link>
+    <link name='Column_15'>
+      <collision name='col'>
+        <geometry>
+          <box>
+            <size>0.1 0.1 2.5</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='vis'>
+        <geometry>
+          <box>
+            <size>0.1 0.1 2.5</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Grey</name>
+          </script>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+      <pose>14 4 0 0 0 0</pose>
+    </link>
+    <link name='Column_16'>
+      <collision name='col'>
+        <geometry>
+          <box>
+            <size>0.1 0.1 2.5</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='vis'>
+        <geometry>
+          <box>
+            <size>0.1 0.1 2.5</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Grey</name>
+          </script>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+      <pose>14 5 0 0 0 0</pose>
+    </link>
+    <link name='Column_17'>
+      <collision name='col'>
+        <geometry>
+          <box>
+            <size>0.1 0.1 2.5</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='vis'>
+        <geometry>
+          <box>
+            <size>0.1 0.1 2.5</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Grey</name>
+          </script>
+          <ambient>1 1 1 1</ambient>
+        </material>
+      </visual>
+      <pose>14 6 0 0 0 0</pose>
+    </link>
+
+
     <static>1</static>
-    <pose>3.5 -3.5 0 0 0 0</pose>
+    <pose>-1 -1 0 0 0 0</pose>
   </model>
 </sdf>

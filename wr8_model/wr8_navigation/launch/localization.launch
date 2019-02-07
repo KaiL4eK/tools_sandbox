@@ -5,11 +5,12 @@
 <!--     <arg name="rviz_gui" value="false" /> -->
     <arg name="x" value="0" />
     <!-- Set this in range [0; -2] -->
-    <arg name="y" value="-2" />  
+    <arg name="y" value="0" />  
     <!-- <arg name="gz_gui" value="true" /> -->
+    <arg name="native_odom" value="true" />
   </include>
 
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find wr8_navigation)/maps/map.yaml" />
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find wr8_navigation)/maps/map2.yaml" />
 
   <include file="$(find wr8_navigation)/launch/amcl.launch">
 

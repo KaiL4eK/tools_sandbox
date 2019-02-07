@@ -10,11 +10,27 @@ project(wr8_software)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  qt_build
 )
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+#SET(CMAKE_AUTOUIC ON)
+
+find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Network)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
+file(GLOB QT_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} resources/*.qrc)
+
+
+QT5_ADD_RESOURCES(QT_RESOURCES_CPP ${QT_RESOURCES})
+QT5_WRAP_UI(QT_FORMS_HPP ${QT_FORMS})
+
+
+add_definitions( -std=c++11 -fPIC)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -116,13 +132,25 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
 # include
-  ${catkin_INCLUDE_DIRS}
+	${catkin_INCLUDE_DIRS}
+	${Qt5Core_INCLUDE_DIRS}
+	${Qt5Network_INCLUDE_DIRS}
+	~/Dev/smart_vehicle_gui/SVServer
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/wr8_software.cpp
 # )
+
+set(SERVER_NODE_NAME gui_server)
+set(SERVER_NODE_SRC  src/server.cpp 
+					 ~/Dev/smart_vehicle_gui/SVServer/datapackage.cpp 
+					 ~/Dev/smart_vehicle_gui/SVServer/svserver.cpp)
+
+add_executable(${SERVER_NODE_NAME} ${SERVER_NODE_SRC})
+add_dependencies(${SERVER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${SERVER_NODE_NAME} ${catkin_LIBRARIES} Qt5::Core Qt5::Network)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries

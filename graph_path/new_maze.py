@@ -93,12 +93,8 @@ class Maze:
                         #     if drctn is None:
                         #         print('Fault')
 
-                        
-
                     # print(node)
                     # print(node.directions)
-
-
 
                     if elem == Maze.START_NODE_ID:
                         self.start_node = node

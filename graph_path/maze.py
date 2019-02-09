@@ -1,17 +1,8 @@
 import numpy as np
-import itertools as it
-
 import pygame
+import itertools as it
 from pygame.locals import *
-
-class MazeNode:
-    def __init__(self):
-        self.directions = [0, 0, 0, 0]
-
-
-
-cell_colors = (255, 255, 255), (0, 255, 0), (128, 128, 255)
-cell_margin = 2
+import time
 
 class Point:
     def __init__(self, x=0, y=0):
@@ -21,11 +12,61 @@ class Point:
     def get_tuple(self):
         return (self.x, self.y)
 
+    def __str__(self):
+        return '[{}; {}]'.format(self.x, self.y)
+
     def __add__(self, other):
         return Point(self.x + other.x, self.y + other.y)
 
     def __sub__(self, other):
         return Point(self.x - other.x, self.y - other.y)
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+to_directions = [
+                    Point(0, 1),
+                    Point(1, 0),
+                    Point(0, -1),
+                    Point(-1, 0)
+                ]
+
+from_direction_letters = [
+                            'U',
+                            'R',
+                            'D',
+                            'L'
+                        ]
+
+from_directions = { 
+                from_direction_letters[0] : Point(0, -1),
+                from_direction_letters[1] : Point(-1, 0),
+                from_direction_letters[2] : Point(0, 1),
+                from_direction_letters[3] : Point(1, 0)
+            }
+
+def getLetterFromDirPnt(fromDirPnt):
+    for direction in from_directions:
+        if from_directions[direction] == fromDirPnt:
+            return direction
+
+    return None
+
+# With dir letter
+class PointDir:
+    def __init__(self, x=0, y=0, d=0):
+        self.x = x
+        self.y = y
+        self.d = d
+
+    def get_tuple(self):
+        return (self.x, self.y, self.d)
+
+    def __str__(self):
+        return '[{}; {}; {}]'.format(self.x, self.y, self.d)
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.d == other.d
 
 class Node:
 
@@ -36,9 +77,9 @@ class Node:
                   Point(0, -1),
                   Point(-1, 0)]
 
-    TRANS_IDX_LEFT  = 0
-    TRANS_IDX_FRWD  = 1
-    TRANS_IDX_RGHT  = 2
+    NEXT_IDX_LEFT  = 2
+    NEXT_IDX_FRWD  = 1
+    NEXT_IDX_RGHT  = 0
 
     # [src_id][TRANS_IDX_*] = place in <next_nodes>
     translation_table = np.array( [
@@ -48,16 +89,51 @@ class Node:
                                     [0, 1, 2]
                                     ], dtype=np.uint8 )
 
-    def __init__(self, node_coord):
+    def __init__(self, pnt_coord):
         # Up, right, down, left
-        self.directions = [0, 0, 0, 0]
-        self.coord      = node_coord
-        self.next_nodes = [None, None, None, None]
+        self.map_neighbours = [0, 0, 0, 0]
+        
+        self.coord          = pnt_coord
+        self.next_nodes     = [None, None, None, None]
+
+        self.dirNeighbours = [None, None, None]
+        self.dirLetr = None
 
         self.idx = -1
 
     def __str__(self):
         return 'id: {}'.format(self.idx)
+
+    def getSrcDir(self, cPnt, pPnt):
+        for direction in from_directions:
+            if from_directions[direction] == (cPnt - pPnt):
+                return direction
+
+        return None
+
+    def show_info(self):
+        print('id: {}/{}:'.format(self.idx, self.dirLetr))
+        
+        nghbr = self.dirNeighbours[0]
+        if nghbr:
+            print('  Neighbour R: {}/{}'.format(nghbr.idx, nghbr.dirLetr))
+        # else:
+            # print('  Neighbour R: None')
+
+        
+        nghbr = self.dirNeighbours[1]
+        if nghbr:
+            print('  Neighbour F: {}/{}'.format(nghbr.idx, nghbr.dirLetr))
+        # else:
+            # print('  Neighbour F: None')
+
+        
+        nghbr = self.dirNeighbours[2]
+        if nghbr:
+            print('  Neighbour L: {}/{}'.format(nghbr.idx, nghbr.dirLetr))
+        # else:
+            # print('  Neighbour L: None')
+
 
     def setMainNode(self):
         self.idx            = Node.node_idx_cntr
@@ -113,80 +189,6 @@ class Node:
 
     #     return self.coord + Node.dir_deltas[next_dir_idx]
 
-class MazeState:
-    
-    STATE_MOVE_LEFT = 0
-    STATE_MOVE_FRWD = 1
-    STATE_MOVE_RGHT = 2
-
-    def __init__(self, maze):
-        self.maze = maze
-
-        self.curr_node    = maze.start_node
-        self.curr_src_idx = maze.start_src_idx
-        self.target_node  = maze.end_node
-
-    def makeMoveDir(self, state_move):
-
-        trans_moves = {
-            MazeState.STATE_MOVE_LEFT: Node.TRANS_IDX_LEFT,
-            MazeState.STATE_MOVE_FRWD: Node.TRANS_IDX_FRWD,
-            MazeState.STATE_MOVE_RGHT: Node.TRANS_IDX_RGHT
-        }
-
-        next_node = self.curr_node.getNextNode(trans_moves[state_move], self.curr_src_idx)
-        if next_node is None:
-            print('No such next node')
-            return False
-
-        next_nd_src_idx = next_node.get_source_idx_node(self.curr_node)
-
-        self.curr_node    = next_node
-        self.curr_src_idx = next_nd_src_idx
-
-        return True
-
-
-    def render_get_cell_rect(self, coordinates, screen):
-        x, y = coordinates
-        y = self.maze.height - 1 - y
-        cell_width = screen.get_width() / self.maze.width
-        adjusted_width = cell_width - cell_margin
-        return pygame.Rect(x * cell_width + cell_margin / 2,
-                           y * cell_width + cell_margin / 2,
-                           adjusted_width, adjusted_width)
-
-
-    def render(self):
-        screen = pygame.display.set_mode((320, 320))
-        screen.fill((0, 0, 0))
-        
-        font = pygame.font.Font(pygame.font.get_default_font(), 12)
-
-        for key in self.maze.edges:
-            screen.fill(cell_colors[0], self.render_get_cell_rect(key, screen))
-
-        for key in self.maze.nodes:
-            rect = self.render_get_cell_rect(key, screen)
-
-            if self.maze.nodes[key] == self.maze.start_node or self.maze.nodes[key] == self.maze.end_node:
-                screen.fill(cell_colors[2], rect)
-            else:
-                screen.fill(cell_colors[1], rect)
-
-            # Draw current node
-            if self.maze.nodes[key] == self.curr_node:
-                screen.fill((128, 128, 128), rect)
-
-            text = font.render("{}".format(self.maze.nodes[key].idx), True, (0, 0, 0))
-            text_rect = text.get_rect()
-            text_rect.center = rect.center
-
-            screen.blit(text, text_rect)
-
-        pygame.display.update()
-
-
 
 class Maze:
 
@@ -200,88 +202,122 @@ class Maze:
 
         self.nodes = {}
         self.edges = {}
+        self.node_cntr = 0
 
         for x in range(self.height):
             for y in range(self.width):
                 point = Point(x, y)
                 elem = self.get_maze_element(point)
+
                 if self.is_element_vacant(elem):
                     node = Node(point)
-                    print(node)
 
-                    for i, delta in enumerate(Node.dir_deltas):
-                        neighbour = self.get_maze_element(point + delta)
+                    for i, delta in enumerate(to_directions):
+                        neighbour_pnt = point + delta
+                        neighbour = self.get_maze_element(neighbour_pnt)
+                        
                         if neighbour is not None and self.is_element_vacant(neighbour):
-                            node.directions[i] = 1
+                            node.map_neighbours[i] = 1
+
+                        # if self.is_element_vacant(neighbour):
+                        #     drctn = node.getSrcDir(neighbour_pnt, point)
+                        #     if drctn is None:
+                        #         print('Fault')
 
                     if elem == Maze.START_NODE_ID:
                         self.start_node = node
-                        self.start_src_idx = 3   # Left
                         self.nodes[point.get_tuple()] = node
+                        node.setMainNode()
                         continue
 
                     if elem == Maze.END_NODE_ID:
                         self.end_node   = node
                         self.nodes[point.get_tuple()] = node
+                        node.setMainNode()
                         continue
 
-                    if sum(node.directions) == 2:
+                    if sum(node.map_neighbours) == 2 and \
+                        ((node.map_neighbours[0] == 1 and node.map_neighbours[2] == 1) or \
+                            (node.map_neighbours[1] == 1 and node.map_neighbours[3] == 1)):
                         self.edges[point.get_tuple()] = node
                     else:
                         self.nodes[point.get_tuple()] = node
+                        node.setMainNode()
 
-        for key in self.nodes:
-            curr_node  = self.nodes[key]
-
-            print('Current node: {}'.format(key))
-            
-            for dir_idx, d in enumerate(curr_node.directions):
-                curr_point = curr_node.coord
-                if d == 1:
-                    print('Direction: {}'.format(dir_idx))
-                    next_point = curr_point + Node.dir_deltas[dir_idx]
-
-                    while (1):
-                        print('Next: {}'.format(next_point.get_tuple()))
-                        if next_point.get_tuple() in self.nodes:
-                            print('>>Node')
-                            curr_node.next_nodes[dir_idx] = self.nodes[next_point.get_tuple()]
-                            break;
-                        elif next_point.get_tuple() in self.edges:
-                            print('>>Edge')
-                            edge = self.edges[next_point.get_tuple()]
-                            prev_point = curr_point
-                            curr_point = next_point
-
-
-                            # Working with edge
-                            src_dir_idx = edge.get_source_idx_coord(prev_point)
-                            if src_dir_idx < 0:
-                                print('Failed get_source_idx()')
-                                exit( 1 )
-                            next_dir_idxs = [i for i, x in enumerate(edge.directions) if i != src_dir_idx and x == 1]
-                            if len(next_dir_idxs) != 1:
-                                print('Achtung!')
-                                exit(1)
-                            next_dir_idx = next_dir_idxs[0]
-
-                            next_point = edge.coord + Node.dir_deltas[next_dir_idx]
+        self.new_nodes_list = {}
 
 
 
-                            # next_point = edge.edge_get_next_point(prev_point)
-                        else:
-                            print('>>Failed')
-                            return
+    def getDirNeighbours(self, pnt, fromDirPnt):
 
-        for key in self.nodes:
-            self.nodes[key].setMainNode()
+        if pnt.get_tuple() in self.edges:
+            # print('Edge found, skip it from {} to {}'.format(pnt, pnt + fromDirPnt))
+            return self.getDirNeighbours(pnt + fromDirPnt, fromDirPnt)
 
-        for key in sorted(self.nodes, key=lambda key: key[0]):
-            print('{}   \t{}'.format(key, self.nodes[key]))
-            for node in self.nodes[key].next_nodes:
-                print('\t{}'.format(node))
+        currNode = self.nodes[pnt.get_tuple()]
 
+        if currNode == self.start_node:
+            return None
+
+        fromDirLtr = getLetterFromDirPnt(fromDirPnt)
+        # print('Node "{}/{}" found on {}'.format(currNode, fromDirLtr, pnt))
+        
+        newPntDir = PointDir(pnt.x, pnt.y, fromDirLtr)
+        
+        if newPntDir.get_tuple() in self.new_nodes_list:
+            # print('But already found on dictionary')
+            return self.new_nodes_list[newPntDir.get_tuple()]
+
+        newNode = Node(pnt)
+        newNode.idx = currNode.idx
+        newNode.dirLetr = fromDirLtr
+
+        # time.sleep(2)
+
+        self.new_nodes_list[newPntDir.get_tuple()] = newNode
+
+        rightDir = self.getRightDirPnt(fromDirPnt)
+        nextPnt = pnt + rightDir
+        if self.isPntValid(nextPnt):
+            newNode.dirNeighbours[0] = self.getDirNeighbours(nextPnt, rightDir)
+        else:
+            newNode.dirNeighbours[0] = None
+
+        forwardDir = self.getForwardDirPnt(fromDirPnt)
+        nextPnt = pnt + forwardDir
+        if self.isPntValid(nextPnt):
+            newNode.dirNeighbours[1] = self.getDirNeighbours(nextPnt, forwardDir)
+        else:
+            newNode.dirNeighbours[1] = None
+
+        leftDir = self.getLeftDirPnt(fromDirPnt)
+        nextPnt = pnt + leftDir
+        if self.isPntValid(nextPnt):
+            newNode.dirNeighbours[2] = self.getDirNeighbours(nextPnt, leftDir)
+        else:
+            newNode.dirNeighbours[2] = None
+
+        return newNode
+
+
+    def getRightDirPnt(self, fromDirPnt):
+        toDirPnt = Point(fromDirPnt.y, -fromDirPnt.x)
+        return toDirPnt
+
+    def getLeftDirPnt(self, fromDirPnt):
+        toDirPnt = Point(-fromDirPnt.y, fromDirPnt.x)
+        return toDirPnt
+
+    def getForwardDirPnt(self, fromDirPnt):
+        toDirPnt = fromDirPnt
+        return toDirPnt
+
+
+    def nextPreprocessing(self):
+        self.start_node.dirNeighbours[1] = self.getDirNeighbours(self.start_node.coord + to_directions[0], to_directions[0])
+
+        for elem in self.new_nodes_list:
+            self.new_nodes_list[elem].show_info()
 
     def is_element_vacant(self, elem):
         if elem == 0 or elem == 1 or elem == 2:
@@ -289,6 +325,24 @@ class Maze:
 
         return False
 
+    def isPntValid(self, p):
+        if p.x < 0 or p.x >= self.width:
+            return False
+
+        if p.y < 0 or p.y >= self.height:
+            return False
+
+        elem = self.get_maze_element(p)
+        if not self.is_element_vacant(elem):
+            return False
+
+        return True
+
+    # Return    
+    #   8 - occupied
+    #   1 - start
+    #   2 - target
+    #   0 - free
     def get_maze_element(self, p):
         if p.x < 0 or p.x >= self.width:
             return None
@@ -299,34 +353,44 @@ class Maze:
         return self.maze_array[self.height-p.y-1][p.x];
 
 
-if __name__ == '__main__':
+    def render_get_cell_rect(self, coordinates, screen):
+        cell_margin = 2
 
-    pygame.init()
-
-    structure = [[0, 0, 0, 0, 8, 8, 0, 8, 8, 0, 8, 8],
-                 [8, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                 [8, 0, 8, 8, 8, 8, 8, 0, 8, 8, 0, 8],
-                 [8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
-                 [8, 0, 8, 8, 8, 0, 8, 8, 8, 8, 8, 8],
-                 [8, 0, 8, 0, 8, 0, 8, 8, 8, 8, 8, 8],
-                 [0, 0, 0, 0, 8, 0, 8, 8, 8, 8, 8, 8],
-                 [0, 8, 8, 0, 8, 2, 8, 8, 8, 8, 8, 8],
-                 [0, 8, 8, 0, 8, 0, 8, 8, 8, 8, 8, 8],
-                 [0, 0, 0, 0, 8, 0, 8, 8, 8, 8, 8, 8],
-                 [0, 8, 8, 0, 8, 0, 8, 8, 8, 8, 8, 8],
-                 [0, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8]]
-    structure = np.array(structure, np.uint8)
-
-    maze = Maze(structure)
-
-    # print(maze.maze_array)
-    maze.render_maze()
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                exit()
+        x, y = coordinates
+        y = self.height - 1 - y
+        cell_width = screen.get_width() / self.width
+        adjusted_width = cell_width - cell_margin
+        return pygame.Rect(x * cell_width + cell_margin / 2,
+                           y * cell_width + cell_margin / 2,
+                           adjusted_width, adjusted_width)
 
 
-    pygame.quit()
+    def render_maze(self):
+        cell_colors = (255, 255, 255), (0, 255, 0), (128, 128, 255)
+        
+        screen = pygame.display.set_mode((320, 320))
+        screen.fill((0, 0, 0))
+
+        font = pygame.font.Font(pygame.font.get_default_font(), 12)
+
+        # White for edges
+        for coord in self.edges:
+            screen.fill(cell_colors[0], self.render_get_cell_rect(coord, screen))
+
+        # Green for nodes
+        for coord in self.nodes:
+            rect = self.render_get_cell_rect(coord, screen)
+
+            if self.nodes[coord] == self.start_node or self.nodes[coord] == self.end_node:
+                screen.fill(cell_colors[2], rect)
+            else:
+                screen.fill(cell_colors[1], rect)
+
+            text = font.render("{}".format(self.nodes[coord].idx), True, (0, 0, 0))
+            text_rect = text.get_rect()
+            text_rect.center = rect.center
+
+            screen.blit(text, text_rect)
+
+        pygame.display.update()
 

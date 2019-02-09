@@ -15,20 +15,20 @@ find_package(catkin REQUIRED COMPONENTS
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-#SET(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 COMPONENTS Core Gui Widgets PrintSupport Network)
+find_package(Qt5 COMPONENTS PrintSupport Core Network)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
-file(GLOB QT_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} resources/*.qrc)
+# file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
+# file(GLOB QT_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} resources/*.qrc)
 
+# QT5_ADD_RESOURCES(QT_RESOURCES_CPP ${QT_RESOURCES})
+# QT5_WRAP_UI(QT_FORMS_HPP ${QT_FORMS})
 
-QT5_ADD_RESOURCES(QT_RESOURCES_CPP ${QT_RESOURCES})
-QT5_WRAP_UI(QT_FORMS_HPP ${QT_FORMS})
-
+set(QT5_INCLUDE_DIRS ${Qt5Core_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS})
+set(QT5_LIBRARIES Qt5::Core Qt5::Network)
 
 add_definitions( -std=c++11 -fPIC)
 
@@ -128,29 +128,34 @@ catkin_package(
 ## Build ##
 ###########
 
+set(SV_ROOT ~/Dev/smart_vehicle_gui)
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+	include
 	${catkin_INCLUDE_DIRS}
-	${Qt5Core_INCLUDE_DIRS}
-	${Qt5Network_INCLUDE_DIRS}
-	~/Dev/smart_vehicle_gui/SVServer
+	${QT5_INCLUDE_DIRS}
+	${SV_ROOT}/SVServer
+	${SV_ROOT}/common
 )
+
+file(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/*.hpp ${SV_ROOT}/common/*.h)
+QT5_WRAP_CPP(QT_MOC_HPP ${QT_MOC})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/wr8_software.cpp
 # )
 
-set(SERVER_NODE_NAME gui_server)
-set(SERVER_NODE_SRC  src/server.cpp 
-					 ~/Dev/smart_vehicle_gui/SVServer/datapackage.cpp 
-					 ~/Dev/smart_vehicle_gui/SVServer/svserver.cpp)
+set(GUI_SERVER_NODE_NAME gui_server)
+set(GUI_SERVER_NODE_SRC  src/server.cpp 
+					 ${SV_ROOT}/common/datapackage.cpp 
+					 ${SV_ROOT}/SVServer/svserver.cpp)
 
-add_executable(${SERVER_NODE_NAME} ${SERVER_NODE_SRC})
-add_dependencies(${SERVER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${SERVER_NODE_NAME} ${catkin_LIBRARIES} Qt5::Core Qt5::Network)
+add_executable(${GUI_SERVER_NODE_NAME} ${GUI_SERVER_NODE_SRC} ${QT_MOC_HPP})
+add_dependencies(${GUI_SERVER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${GUI_SERVER_NODE_NAME} ${catkin_LIBRARIES} ${QT5_LIBRARIES})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries

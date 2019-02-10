@@ -12,6 +12,9 @@ class Point:
     def get_tuple(self):
         return (self.x, self.y)
 
+    def get_array(self):
+        return np.array([self.x, self.y])
+
     def __str__(self):
         return '[{}; {}]'.format(self.x, self.y)
 
@@ -23,6 +26,9 @@ class Point:
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
+    
+    def __hash__(self):
+        return hash((self.x, self.y))
 
 to_directions = [
                     Point(0, 1),
@@ -35,7 +41,8 @@ from_direction_letters = [
                             'U',
                             'R',
                             'D',
-                            'L'
+                            'L',
+                            '-'
                         ]
 
 from_directions = { 
@@ -54,7 +61,7 @@ def getLetterFromDirPnt(fromDirPnt):
 
 # With dir letter
 class PointDir:
-    def __init__(self, x=0, y=0, d=0):
+    def __init__(self, x=0, y=0, d='-'):
         self.x = x
         self.y = y
         self.d = d
@@ -67,6 +74,15 @@ class PointDir:
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y and self.d == other.d
+    
+    def __hash__(self):
+        return hash((self.x, self.y, self.d))
+
+
+def getManhattanDistance(cNode, oNode):
+    dist = np.absolute(oNode.coord.get_array() - cNode.coord.get_array())
+    return dist[0] + dist[1]
+
 
 class Node:
 
@@ -81,14 +97,6 @@ class Node:
     NEXT_IDX_FRWD  = 1
     NEXT_IDX_RGHT  = 0
 
-    # [src_id][TRANS_IDX_*] = place in <next_nodes>
-    translation_table = np.array( [
-                                    [1, 2, 3],
-                                    [2, 3, 0],
-                                    [3, 0, 1],
-                                    [0, 1, 2]
-                                    ], dtype=np.uint8 )
-
     def __init__(self, pnt_coord):
         # Up, right, down, left
         self.map_neighbours = [0, 0, 0, 0]
@@ -97,12 +105,13 @@ class Node:
         self.next_nodes     = [None, None, None, None]
 
         self.dirNeighbours = [None, None, None]
-        self.dirLetr = None
+        self.dirLetr = '-'
 
         self.idx = -1
+        self.signChecked = False
 
     def __str__(self):
-        return 'id: {}'.format(self.idx)
+        return 'id: {}/{} ({}/{})'.format(self.idx, self.dirLetr, self.signChecked, self.coord.get_array())
 
     def getSrcDir(self, cPnt, pPnt):
         for direction in from_directions:
@@ -110,6 +119,21 @@ class Node:
                 return direction
 
         return None
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.idx == other.idx and self.dirLetr == other.dirLetr
+
+        return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, self.__class__):
+            return self.idx < other.idx
+
+        return NotImplemented
+    
+    def __hash__(self):
+        return hash((self.idx, self.dirLetr))
 
     def show_info(self):
         print('id: {}/{}:'.format(self.idx, self.dirLetr))
@@ -139,56 +163,6 @@ class Node:
         self.idx            = Node.node_idx_cntr
         Node.node_idx_cntr  += 1
 
-    def getNextNode(self, trans_idx, curr_src_idx):
-        trans_neighbours = self.getTransNeighbours(curr_src_idx)
-
-        return trans_neighbours[trans_idx]
-
-    # Only for MainNode
-    def get_source_idx_node(self, src_node):
-        for src_idx in range(4):
-            if src_node == self.next_nodes[src_idx]:
-                return src_idx
-
-        return -1 # Error
-
-
-    def get_source_idx_coord(self, src_coord):
-        delta = src_coord - self.coord
-        # print('Delta: {} - {}'.format(self.coord.get_tuple(), src_coord.get_tuple()))
-
-        for src_idx, dlt in enumerate(Node.dir_deltas):
-            if delta.x == dlt.x and delta.y == dlt.y:
-                return src_idx
-
-        # exit(1)
-        return -1 # Error 
-
-    def getTransNeighbours(self, src_idx):
-        trans_neighbours = [None, None, None]
-
-        tr_table = Node.translation_table[src_idx]
-
-        for tr_idx, dir_idx in enumerate(tr_table):
-            trans_neighbours[tr_idx] = self.next_nodes[dir_idx]
-
-        return trans_neighbours
-
-    # def edge_get_next_point(self, src_coord):
-    #     src_dir_idx = self.get_source_idx_coord(src_coord)
-    #     if src_dir_idx < 0:
-    #         print('Failed get_source_idx()')
-    #         exit( 1 )
-
-    #     next_dir_idxs = [i for i, x in enumerate(self.directions) if i != src_dir_idx and x == 1]
-    #     if len(next_dir_idxs) != 1:
-    #         print('Achtung!')
-    #         exit(1)
-
-    #     next_dir_idx = next_dir_idxs[0]
-
-    #     return self.coord + Node.dir_deltas[next_dir_idx]
-
 
 class Maze:
 
@@ -203,6 +177,8 @@ class Maze:
         self.nodes = {}
         self.edges = {}
         self.node_cntr = 0
+
+        self.screen = None
 
         for x in range(self.height):
             for y in range(self.width):
@@ -226,55 +202,58 @@ class Maze:
 
                     if elem == Maze.START_NODE_ID:
                         self.start_node = node
-                        self.nodes[point.get_tuple()] = node
+                        self.nodes[point] = node
                         node.setMainNode()
                         continue
 
                     if elem == Maze.END_NODE_ID:
                         self.end_node   = node
-                        self.nodes[point.get_tuple()] = node
+                        self.nodes[point] = node
                         node.setMainNode()
                         continue
 
                     if sum(node.map_neighbours) == 2 and \
                         ((node.map_neighbours[0] == 1 and node.map_neighbours[2] == 1) or \
                             (node.map_neighbours[1] == 1 and node.map_neighbours[3] == 1)):
-                        self.edges[point.get_tuple()] = node
+                        self.edges[point] = node
                     else:
-                        self.nodes[point.get_tuple()] = node
+                        self.nodes[point] = node
                         node.setMainNode()
 
         self.new_nodes_list = {}
 
-
-
+    # Convert to extended nodes
     def getDirNeighbours(self, pnt, fromDirPnt):
 
-        if pnt.get_tuple() in self.edges:
+        if pnt in self.edges:
             # print('Edge found, skip it from {} to {}'.format(pnt, pnt + fromDirPnt))
             return self.getDirNeighbours(pnt + fromDirPnt, fromDirPnt)
 
-        currNode = self.nodes[pnt.get_tuple()]
+        currNode = self.nodes[pnt]
 
         if currNode == self.start_node:
             return None
 
         fromDirLtr = getLetterFromDirPnt(fromDirPnt)
-        # print('Node "{}/{}" found on {}'.format(currNode, fromDirLtr, pnt))
+        # print('Node "{}" //{}" found on {}'.format(currNode, fromDirLtr, pnt))
         
         newPntDir = PointDir(pnt.x, pnt.y, fromDirLtr)
         
-        if newPntDir.get_tuple() in self.new_nodes_list:
+        if newPntDir in self.new_nodes_list:
             # print('But already found on dictionary')
-            return self.new_nodes_list[newPntDir.get_tuple()]
+            return self.new_nodes_list[newPntDir]
 
         newNode = Node(pnt)
         newNode.idx = currNode.idx
         newNode.dirLetr = fromDirLtr
 
+        # Update target node definition
+        if newNode.idx == self.end_node.idx:
+            self.end_node = newNode
+
         # time.sleep(2)
 
-        self.new_nodes_list[newPntDir.get_tuple()] = newNode
+        self.new_nodes_list[newPntDir] = newNode
 
         rightDir = self.getRightDirPnt(fromDirPnt)
         nextPnt = pnt + rightDir
@@ -312,12 +291,16 @@ class Maze:
         toDirPnt = fromDirPnt
         return toDirPnt
 
+    def calcHeuristic(self, nextNode):
+        return getManhattanDistance(nextNode, self.end_node)
 
     def nextPreprocessing(self):
         self.start_node.dirNeighbours[1] = self.getDirNeighbours(self.start_node.coord + to_directions[0], to_directions[0])
 
-        for elem in self.new_nodes_list:
-            self.new_nodes_list[elem].show_info()
+        # for elem in self.new_nodes_list:
+            # self.new_nodes_list[elem].show_info()
+
+
 
     def is_element_vacant(self, elem):
         if elem == 0 or elem == 1 or elem == 2:
@@ -352,45 +335,62 @@ class Maze:
 
         return self.maze_array[self.height-p.y-1][p.x];
 
+    ### RENDERING ###
+    def render_getCellWidth(self):
+        return self.screen.get_width() / self.width
 
-    def render_get_cell_rect(self, coordinates, screen):
-        cell_margin = 2
+    def render_Map2Canvas(self, pnt):
+        cellWidth = self.render_getCellWidth()
 
-        x, y = coordinates
-        y = self.height - 1 - y
-        cell_width = screen.get_width() / self.width
-        adjusted_width = cell_width - cell_margin
-        return pygame.Rect(x * cell_width + cell_margin / 2,
-                           y * cell_width + cell_margin / 2,
-                           adjusted_width, adjusted_width)
+        pnt[1] = self.height - pnt[1]
+        pnt = pnt * cellWidth + np.array([cellWidth/2, -cellWidth/2])
+        pnt = pnt.astype(np.int32)
 
+        return pnt
 
     def render_maze(self):
         cell_colors = (255, 255, 255), (0, 255, 0), (128, 128, 255)
         
-        screen = pygame.display.set_mode((320, 320))
-        screen.fill((0, 0, 0))
+        if self.screen is None:
+            self.screen = pygame.display.set_mode((420, 420))
+        
+        self.screen.fill((0, 0, 0))
+
+        def render_get_cell_rect(coordinates, maze):
+            cell_margin = 2
+
+            x, y = coordinates
+            y = maze.height - 1 - y
+            cell_width = maze.render_getCellWidth()
+            adjusted_width = cell_width - cell_margin
+            return pygame.Rect(x * cell_width + cell_margin / 2,
+                               y * cell_width + cell_margin / 2,
+                               adjusted_width, adjusted_width)
 
         font = pygame.font.Font(pygame.font.get_default_font(), 12)
 
         # White for edges
-        for coord in self.edges:
-            screen.fill(cell_colors[0], self.render_get_cell_rect(coord, screen))
+        for pnt in self.edges:
+            coord = pnt.get_array()
+            self.screen.fill(cell_colors[0], render_get_cell_rect(coord, self))
 
         # Green for nodes
-        for coord in self.nodes:
-            rect = self.render_get_cell_rect(coord, screen)
+        for pnt in self.nodes:
+            coord = pnt.get_array()
+            rect = render_get_cell_rect(coord, self)
 
-            if self.nodes[coord] == self.start_node or self.nodes[coord] == self.end_node:
-                screen.fill(cell_colors[2], rect)
+            if self.nodes[pnt] == self.start_node or self.nodes[pnt] == self.end_node:
+                self.screen.fill(cell_colors[2], rect)
             else:
-                screen.fill(cell_colors[1], rect)
+                self.screen.fill(cell_colors[1], rect)
 
-            text = font.render("{}".format(self.nodes[coord].idx), True, (0, 0, 0))
+            text = font.render("{}".format(self.nodes[pnt].idx), True, (0, 0, 0))
             text_rect = text.get_rect()
             text_rect.center = rect.center
 
-            screen.blit(text, text_rect)
+            self.screen.blit(text, text_rect)
 
         pygame.display.update()
+
+        # Render possible directions
 

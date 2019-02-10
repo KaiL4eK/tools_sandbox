@@ -151,7 +151,7 @@ QT5_WRAP_CPP(QT_MOC_HPP ${QT_MOC})
 set(GUI_SERVER_NODE_NAME gui_server)
 set(GUI_SERVER_NODE_SRC  src/server.cpp 
 					 ${SV_ROOT}/common/datapackage.cpp 
-					 ${SV_ROOT}/SVServer/svserver.cpp)
+					 ${SV_ROOT}/common/svserver.cpp)
 
 add_executable(${GUI_SERVER_NODE_NAME} ${GUI_SERVER_NODE_SRC} ${QT_MOC_HPP})
 add_dependencies(${GUI_SERVER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

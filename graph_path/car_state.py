@@ -83,7 +83,7 @@ class CarState:
 
     def updateSignsInfo(self):
         if self.cNode.signChecked:
-            return
+            return 0
 
         # Test if node is just turn
         waysCnt = len([i for i, j in enumerate(self.cNode.dirNeighbours) if j is not None])

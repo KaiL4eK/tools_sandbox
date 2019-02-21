@@ -14,9 +14,9 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
+# set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 COMPONENTS PrintSupport Core Network)
+find_package(Qt5 COMPONENTS Core Network)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -128,15 +128,15 @@ catkin_package(
 ## Build ##
 ###########
 
-set(SV_ROOT smart_vehicle_gui)
-
+set(SV_ROOT ${${PROJECT_NAME}_SOURCE_DIR}/smart_vehicle_gui)
+# set(SV_ROOT smart_vehicle_gui)
+message( '>>>' ${SV_ROOT} )
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
 	include
 	${catkin_INCLUDE_DIRS}
 	${QT5_INCLUDE_DIRS}
-	${SV_ROOT}/SVServer
 	${SV_ROOT}/common
 )
 

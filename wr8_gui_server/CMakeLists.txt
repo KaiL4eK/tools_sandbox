@@ -128,7 +128,7 @@ catkin_package(
 ## Build ##
 ###########
 
-set(SV_ROOT ~/Dev/smart_vehicle_gui)
+set(SV_ROOT smart_vehicle_gui)
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations

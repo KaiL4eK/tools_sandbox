@@ -31,28 +31,23 @@ public:
     	sendTmr.start(200);
     }
 
-    void sendTmrHandler()
-    {
-		Q_EMIT sendData( m_dataPkg );
-    }
-
-	void encoderRawCb(const std_msgs::Float32& msg)
+	void encoderRawCb(const std_msgs::Int32& msg)
 	{
-		ROS_INFO("Received potentiometer data: %g", msg.data);
-		m_dataPkg.m_steeringAngle = msg.data;
+		ROS_INFO("Received encoder data: %d", msg.data);
+		m_dataPkg.m_encoderValue = msg.data;
 	}
 
-	void steerCb(const std_msgs::Int32& msg)
+	void steerCb(const std_msgs::Float32& msg)
 	{
-		ROS_INFO("Received potentiometer data: %d", msg.data);
-		m_dataPkg.m_encoderValue = msg.data;
+		ROS_INFO("Received steer data: %g", msg.data);
+		m_dataPkg.m_steeringAngle = msg.data;
 	}
 
 	void run()
 	{
 		ros::NodeHandle n;
-		n.subscribe("steering", 1000, &ROSServer::steerCb, this);
-		n.subscribe("encoder_raw", 1000, &ROSServer::encoderRawCb, this);
+		ros::Subscriber sub = n.subscribe("steering", 1000, &ROSServer::steerCb, this);
+		ros::Subscriber sub1 = n.subscribe("encoder_raw", 1000, &ROSServer::encoderRawCb, this);
 		
 		while ( ros::ok() )
 		{
@@ -61,6 +56,12 @@ public:
 
 		Q_EMIT rosShutdown();
 	}
+
+private Q_SLOTS:
+	void sendTmrHandler()
+    {
+		Q_EMIT sendData( m_dataPkg );
+    }
 
 Q_SIGNALS:
     void rosShutdown();

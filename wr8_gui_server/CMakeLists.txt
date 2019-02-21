@@ -129,8 +129,7 @@ catkin_package(
 ###########
 
 set(SV_ROOT ${${PROJECT_NAME}_SOURCE_DIR}/smart_vehicle_gui)
-# set(SV_ROOT smart_vehicle_gui)
-message( '>>>' ${SV_ROOT} )
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(

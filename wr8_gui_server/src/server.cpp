@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 	qRegisterMetaType<DataPackage>();
 
 	SVServer server;
-	server.start( QHostAddress("192.168.31.152"), 5556 );
+	server.start( QHostAddress("0.0.0.0"), 5556 );
 
 	ROSServer ros_server(&server);
 	ros_server.start();

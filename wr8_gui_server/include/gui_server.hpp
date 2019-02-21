@@ -34,7 +34,7 @@ public:
 	void run()
 	{
 		ros::NodeHandle n;
-		ros::Subscriber sub = n.subscribe("steering_gui", 1000, &ROSServer::topicCallback, this);
+		ros::Subscriber sub = n.subscribe("steering", 1000, &ROSServer::topicCallback, this);
 		
 		while ( ros::ok() )
 		{

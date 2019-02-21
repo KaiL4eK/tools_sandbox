@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(wr8_description)
+project(wr8_gui_server)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -10,11 +10,27 @@ project(wr8_description)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  qt_build
 )
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+
+find_package(Qt5 COMPONENTS PrintSupport Core Network)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+# file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
+# file(GLOB QT_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} resources/*.qrc)
+
+# QT5_ADD_RESOURCES(QT_RESOURCES_CPP ${QT_RESOURCES})
+# QT5_WRAP_UI(QT_FORMS_HPP ${QT_FORMS})
+
+set(QT5_INCLUDE_DIRS ${Qt5Core_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS})
+set(QT5_LIBRARIES Qt5::Core Qt5::Network)
+
+add_definitions( -std=c++11 -fPIC)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -103,7 +119,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES wr8_description
+#  LIBRARIES wr8_gui_server
 #  CATKIN_DEPENDS roscpp rospy
 #  DEPENDS system_lib
 )
@@ -112,17 +128,34 @@ catkin_package(
 ## Build ##
 ###########
 
+set(SV_ROOT ~/Dev/smart_vehicle_gui)
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
+	include
+	${catkin_INCLUDE_DIRS}
+	${QT5_INCLUDE_DIRS}
+	${SV_ROOT}/SVServer
+	${SV_ROOT}/common
 )
+
+file(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/*.hpp ${SV_ROOT}/common/*.h)
+QT5_WRAP_CPP(QT_MOC_HPP ${QT_MOC})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/wr8_description.cpp
+#   src/${PROJECT_NAME}/wr8_gui_server.cpp
 # )
+
+set(GUI_SERVER_NODE_NAME gui_server)
+set(GUI_SERVER_NODE_SRC  src/server.cpp 
+					 ${SV_ROOT}/common/datapackage.cpp 
+					 ${SV_ROOT}/common/svserver.cpp)
+
+add_executable(${GUI_SERVER_NODE_NAME} ${GUI_SERVER_NODE_SRC} ${QT_MOC_HPP})
+add_dependencies(${GUI_SERVER_NODE_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${GUI_SERVER_NODE_NAME} ${catkin_LIBRARIES} ${QT5_LIBRARIES})
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -132,7 +165,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/wr8_description_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/wr8_gui_server_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -189,7 +222,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_wr8_description.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_wr8_gui_server.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

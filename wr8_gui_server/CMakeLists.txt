@@ -10,8 +10,13 @@ project(wr8_gui_server)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+)
+
+if("$ENV{ROS_DISTRO}" STREQUAL "kinetic")
+find_package(catkin REQUIRED COMPONENTS
   qt_build
 )
+endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # set(CMAKE_AUTOMOC ON)

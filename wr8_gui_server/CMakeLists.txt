@@ -7,14 +7,17 @@ project(wr8_gui_server)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-)
 
 if("$ENV{ROS_DISTRO}" STREQUAL "kinetic")
 find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  rospy
   qt_build
+)
+else()
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  rospy
 )
 endif()
 

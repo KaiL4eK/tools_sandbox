@@ -1,6 +1,0 @@
-devel_space: /home/alexey/data/Dev/tools_sandbox/ublox_test/devel
-install: false
-install_space: /home/alexey/data/Dev/tools_sandbox/ublox_test/install
-profile: default
-source_space: /home/alexey/data/Dev/tools_sandbox/ublox_test/src
-workspace: /home/alexey/data/Dev/tools_sandbox/ublox_test

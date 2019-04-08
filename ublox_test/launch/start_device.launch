@@ -16,4 +16,14 @@
     <param name="device" value="/dev/ttyUSB0" />
 
   </node>
+
+  <node pkg="gps_common" type="utm_odometry_node" name="utm_odom"
+        output="$(arg output)" 
+        clear_params="$(arg clear_params)"
+        respawn="$(arg respawn)" 
+        respawn_delay="$(arg respawn_delay)">
+    <remap from="fix" to="ublox_gps_node/fix"/>
+    <param name="frame_id" value="world"/>
+    <param name="child_frame_id" value="base_footprint"/>
+  </node>
 </launch>

@@ -1,30 +1,36 @@
 # Configuration Settings for C94-M8P device
 
-debug: 4                    # Range 0-4 (0 means no debug statements will print)
+debug: 2                    # Range 0-4 (0 means no debug statements will print)
 
 save:
   mask: 3103                # Save I/O, Message, INF Message, Nav, Receiver 
                             # Manager, Antenna, and Logging Configuration
   device: 4                 # Save to EEPROM
 
-device: /dev/ttyUSB
+device: /dev/ttyUSB0
 frame_id: m8n 
-rate: 4                     # in Hz
-nav_rate: 4                 # [# of measurement cycles], recommended 1 Hz, may 
-                            # be either 5 Hz (Dual constellation) or 
+rate: 1                     # in Hz
+nav_rate: 1                 # [# of measurement cycles], recommended 1 Hz, may 
+                              # be either 5 Hz (Dual constellation) or 
                             # 8 Hz (GPS only)
 dynamic_model: 0            # Airborne < 2G, 2D fix not supported (3D only), 
                             # Max Alt: 50km
                             # Max Horizontal Velocity: 250 m/s, 
                             # Max Vertical Velocity: 100 m/s
-fix_mode: auto 
+fix_mode: 2d 
 enable_ppp: false            # Not supported by C94-M8P
 dr_limit: 0
 
 uart1:
-  baudrate: 57600           # C94-M8P specific
-  in: 32                    # RTCM 3
-  out: 32                   # No UART out for rover
+  baudrate: 9600            # C94-M8P specific
+# uint16 PROTO_UBX = 1
+# uint16 PROTO_NMEA = 2
+# uint16 PROTO_RTCM = 4     # only for inProtoMask
+# uint16 PROTO_RTCM3 = 32   # (not supported in protocol versions less than 20)
+  in: 1
+  out: 2
+
+tmode3: 0  
 
 gnss:
   glonass: true             # Supported by C94-M8P

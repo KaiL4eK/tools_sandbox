@@ -69,6 +69,7 @@ exit
 gst-launch-1.0 -v v4l2src device=$GST_DEVICE ! "video/x-raw,width=640,framerate=30/1" ! videoconvert ! \
     x264enc tune=zerolatency bitrate=5000 speed-preset=superfast ! \
     rtph264pay pt=96 ! udpsink host=192.168.31.76 port=$GST_PORT
+
 gst-launch-1.0 -v v4l2src device=$GST_DEVICE ! "video/x-raw,width=640,framerate=30/1" ! videoconvert ! \
     jpegenc ! \
     rtpjpegpay pt=96 ! udpsink host=192.168.31.76 port=$GST_PORT
@@ -77,6 +78,7 @@ gst-launch-1.0 -v v4l2src device=$GST_DEVICE ! "video/x-raw,width=640,framerate=
 gst-launch-1.0 -v v4l2src device=$GST_DEVICE ! "video/x-raw,width=640, height=480, framerate=30/1" ! videoconvert ! \
     jpegenc ! \
     tcpserversink host=0.0.0.0 port=$GST_PORT recover-policy=keyframe sync-method=latest-keyframe
+
 gst-launch-1.0 -v v4l2src device=$GST_DEVICE ! "video/x-raw,width=640, height=480, framerate=30/1" ! videoconvert ! \
     x264enc tune=zerolatency bitrate=5000 speed-preset=superfast ! \
     tcpserversink host=0.0.0.0 port=$GST_PORT recover-policy=keyframe sync-method=latest-keyframe
@@ -84,6 +86,7 @@ gst-launch-1.0 -v v4l2src device=$GST_DEVICE ! "video/x-raw,width=640, height=48
 gst-launch-1.0 -v videotestsrc ! "video/x-raw,width=640, height=480, framerate=30/1" ! videoconvert ! \
     jpegenc ! \
     tcpserversink host=0.0.0.0 port=$GST_PORT recover-policy=keyframe sync-method=latest-keyframe
+
 gst-launch-1.0 -v videotestsrc ! "video/x-raw,width=640, height=480, framerate=30/1" ! videoconvert ! \
     x264enc tune=zerolatency bitrate=2000 speed-preset=superfast ! \
     tcpserversink host=0.0.0.0 port=$GST_PORT recover-policy=keyframe sync-method=latest-keyframe
@@ -98,6 +101,9 @@ gst-launch-1.0 -v tcpclientsrc host=$GST_ADDR port=$GST_PORT ! jpegparse ! jpegd
 gst-launch-1.0 -v udpsrc port=$GST_PORT ! \
     "application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! \
     rtph264depay ! avdec_h264 ! fpsdisplaysink sync=false
-gst-launch-1.0 udpsrc port=$GST_PORT ! application/x-rtp,encoding-name=JPEG ! rtpjpegdepay ! jpegdec ! fpsdisplaysink sync=false
+
+gst-launch-1.0 -v udpsrc port=$GST_PORT ! \
+    "application/x-rtp,encoding-name=JPEG" ! \
+    rtpjpegdepay ! jpegdec ! fpsdisplaysink sync=false
 
 # cvlc tcp://127.0.0.1:5000

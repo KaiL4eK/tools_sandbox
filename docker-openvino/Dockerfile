@@ -55,6 +55,6 @@ RUN pip3 install --no-cache-dir tensorflow defusedxml test-generator==0.1.1
 USER developer
 ENV HOME /home/developer
 ENV MO_PATH /opt/intel/openvino/deployment_tools/model_optimizer/mo_tf.py
-WORKDIR /home/developer
+WORKDIR /home/developer/ws
 
 RUN echo "source /opt/intel/openvino/bin/setupvars.sh" >> /home/developer/.bashrc

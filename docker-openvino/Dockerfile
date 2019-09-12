@@ -48,10 +48,13 @@ RUN mkdir -p /home/developer && \
     chown developer:developer -R /home/developer && \
     chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo
 
-RUN pip3 install requests
+RUN apt install -y python3-setuptools python3
+RUN pip3 install --no-cache-dir requests numpy networkx
+RUN pip3 install --no-cache-dir tensorflow defusedxml test-generator==0.1.1
 
 USER developer
 ENV HOME /home/developer
+ENV MO_PATH /opt/intel/openvino/deployment_tools/model_optimizer/mo_tf.py
 WORKDIR /home/developer
 
 RUN echo "source /opt/intel/openvino/bin/setupvars.sh" >> /home/developer/.bashrc

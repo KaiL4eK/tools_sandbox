@@ -2,6 +2,7 @@ FROM ubuntu:16.04
 ENV http_proxy $HTTP_PROXY
 ENV https_proxy $HTTP_PROXY
 ARG DOWNLOAD_LINK=http://registrationcenter-download.intel.com/akdlm/irc_nas/15792/l_openvino_toolkit_p_2019.2.275.tgz
+ARG UID=1000
 ARG INSTALL_DIR=/opt/intel/openvino
 ARG TEMP_DIR=/tmp/openvino_installer
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -13,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     automake \
     libtool \
     unzip \
+    python3-pip \
     lsb-release && \
     rm -rf /var/lib/apt/lists/*
 RUN mkdir -p $TEMP_DIR && cd $TEMP_DIR
@@ -39,12 +41,14 @@ RUN cd /tmp/ && \
    rm -rf /tmp/*
 
 RUN mkdir -p /home/developer && \
-    echo "developer:x:1009:1009:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
-    echo "developer:x:1009:" >> /etc/group && \
+    echo "developer:x:$UID:$UID:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
+    echo "developer:x:$UID:" >> /etc/group && \
     echo "developer ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/developer && \
     chmod 0440 /etc/sudoers.d/developer && \
     chown developer:developer -R /home/developer && \
     chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo
+
+RUN pip3 install requests
 
 USER developer
 ENV HOME /home/developer
